@@ -1,0 +1,15 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "======== Build hook running"
+export CREATED=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+export REVISION=$(git rev-parse --short HEAD)
+export DOCKER_REPO=${DOCKER_REPO:-gomplate/gomplate-resource}
+export DOCKER_TAG=${DOCKER_TAG:-latest}
+export IMAGE_NAME=${IMAGE_NAME:-${DOCKER_REPO}:${DOCKER_TAG}}
+
+echo "======== Building $IMAGE_NAME"
+docker build --build-arg CREATED \
+             --build-arg REVISION \
+             --build-arg VERSION=${DOCKER_TAG} \
+             -t ${IMAGE_NAME} .
