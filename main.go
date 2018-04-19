@@ -17,7 +17,7 @@ import (
 func main() {
 	switch basename := path.Base(os.Args[0]); basename {
 	case "check":
-		fmt.Printf("[{\"noop\":true,\"date\": \"%s\"}]\n", time.Now().Format(time.RFC3339))
+		fmt.Printf("[{\"date\": \"%s\"}]\n", time.Now().Format(time.RFC3339))
 	case "in":
 		in, err := ioutil.ReadAll(os.Stdin)
 		if err != nil {
