@@ -45,13 +45,9 @@ func main() {
 			log.Fatalf("couldn't run gomplate: %#v", err)
 		}
 
-		outBytes, err := json.Marshal(result{
+		json.NewEncoder(os.Stdout).Encode(result{
 			Version: p.Version,
 		})
-		if err != nil {
-			log.Fatalf("can't marshal")
-		}
-		fmt.Println(string(outBytes))
 	default:
 		log.Fatalf("%s is an invalid binary name", basename)
 	}
