@@ -44,13 +44,35 @@ func main() {
 		if err != nil {
 			log.Fatalf("couldn't run gomplate: %#v", err)
 		}
+
+		outBytes, err := json.Marshal(result{
+			Version: p.Version,
+		})
+		if err != nil {
+			log.Fatalf("can't marshal")
+		}
+		fmt.Println(string(outBytes))
 	default:
 		log.Fatalf("%s is an invalid binary name", basename)
 	}
 }
 
-// input payload
+// input
 type payload struct {
-	Source struct{}
-	Params *gomplate.Config
+	Version version `json:"version"`
+	Source  struct{}
+	Params  *gomplate.Config
+}
+
+// output
+type result struct {
+	Version  version    `json:"version"`
+	Metadata []metadata `json:"metadata,omitempty"`
+}
+
+type version map[string]string
+
+type metadata struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
