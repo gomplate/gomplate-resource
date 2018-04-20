@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/hairyhenderson/gomplate"
@@ -40,14 +43,49 @@ func main() {
 				p.Params.OutputFiles[i] = path.Join(destination, f)
 			}
 		}
-		err = gomplate.RunTemplates(p.Params)
-		if err != nil {
-			log.Fatalf("couldn't run gomplate: %#v", err)
-		}
 
+		buf := &bytes.Buffer{}
+		gomplate.Stdout = &nopWCloser{buf}
+		oStdout := os.Stdout
+		oStderr := os.Stderr
+		defer func() {
+			os.Stdout = oStdout
+			os.Stderr = oStderr
+		}()
+		ro, wo, _ := os.Pipe()
+		re, we, _ := os.Pipe()
+		os.Stdout = wo
+		os.Stdout = we
+
+		stdout := make(chan string)
+		stderr := make(chan string)
+		go func() {
+			b := bytes.Buffer{}
+			e := bytes.Buffer{}
+			io.Copy(&b, ro)
+			io.Copy(&e, re)
+			stdout <- b.String()
+			stderr <- e.String()
+		}()
+		wd, _ := os.Getwd()
+		err = gomplate.RunTemplates(p.Params)
+		wo.Close()
+		we.Close()
+		os.Stdout = oStdout
+		os.Stderr = oStderr
 		json.NewEncoder(os.Stdout).Encode(result{
 			Version: p.Version,
+			Metadata: []metadata{
+				{"workDir", wd},
+				{"templateOut", buf.String()},
+				{"stdout", <-stdout},
+				{"stderr", <-stderr},
+				{"success", strconv.FormatBool(err == nil)},
+			},
 		})
+		if err != nil {
+			log.Fatalf("couldn't run gomplate: %s", err)
+		}
 	default:
 		log.Fatalf("%s is an invalid binary name", basename)
 	}
@@ -71,4 +109,13 @@ type version map[string]string
 type metadata struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
+}
+
+// like ioutil.NopCloser(), except for io.WriteClosers...
+type nopWCloser struct {
+	io.Writer
+}
+
+func (n *nopWCloser) Close() error {
+	return nil
 }
