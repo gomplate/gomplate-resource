@@ -77,6 +77,7 @@ func main() {
 			Version: p.Version,
 			Metadata: []metadata{
 				{"workDir", wd},
+				{"destination", destination},
 				{"templateOut", buf.String()},
 				{"stdout", <-stdout},
 				{"stderr", <-stderr},
