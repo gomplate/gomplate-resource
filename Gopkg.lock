@@ -35,8 +35,8 @@
     "service/ssm",
     "service/sts"
   ]
-  revision = "63f395001dd8f8d48ef82aad68256167e4051652"
-  version = "v1.13.33"
+  revision = "3e7014382cdc91695381614d0110a3cff997ba72"
+  version = "v1.13.34"
 
 [[projects]]
   branch = "master"
@@ -94,7 +94,7 @@
     "time",
     "vault"
   ]
-  revision = "0465ece752b429c611c7628e986bebd984cfe3f6"
+  revision = "e3cbe27cee9d1cb7fe4aafcff8287a57f9d47b69"
 
 [[projects]]
   branch = "support-map-interface-keys"
@@ -223,7 +223,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["pbkdf2"]
-  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+  revision = "e73bf333ef8920dbb52ad18d4bd38ad9d9bc76d7"
 
 [[projects]]
   branch = "master"
@@ -235,7 +235,7 @@
     "idna",
     "lex/httplex"
   ]
-  revision = "d41e8174641f662c5a2d1c7a5f9e828788eb8706"
+  revision = "5f9ae10d9af5b1c89ae6904293b14b064d4ada23"
 
 [[projects]]
   branch = "master"
