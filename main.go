@@ -73,7 +73,7 @@ func main() {
 		we.Close()
 		os.Stdout = oStdout
 		os.Stderr = oStderr
-		json.NewEncoder(os.Stdout).Encode(result{
+		r := result{
 			Version: p.Version,
 			Metadata: []metadata{
 				{"workDir", wd},
@@ -81,8 +81,15 @@ func main() {
 				{"stdout", <-stdout},
 				{"stderr", <-stderr},
 				{"success", strconv.FormatBool(err == nil)},
+				{"errors", strconv.Itoa(gomplate.Metrics.Errors)},
+				{"gatherDuration", gomplate.Metrics.GatherDuration.String()},
+				{"totalRenderDuration", gomplate.Metrics.TotalRenderDuration.String()},
 			},
-		})
+		}
+		if err != nil {
+			r.Metadata = append(r.Metadata, metadata{"error", err.Error()})
+		}
+		json.NewEncoder(os.Stdout).Encode(r)
 		if err != nil {
 			log.Fatalf("couldn't run gomplate: %s", err)
 		}
